@@ -1,21 +1,26 @@
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	application "emulator/app"
+	"github.com/veandco/go-sdl2/sdl"
+)
 
 const (
 	WIN_TITLE  = "CHIP8 Emulator"
 	WIN_WIDTH  = 64
 	WIN_HEIGHT = 32
+	FG_COLOR   = 0xffffffff
+	BG_COLOR   = 0x00000000
 )
 
 func main() {
-	config := NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH)
-	app, err := NewApp(config)
+	config := application.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, FG_COLOR, BG_COLOR)
+	app, err := application.NewApp(config)
 	if err != nil {
 		panic(err)
 	}
 	defer app.HandleQuit()
-	window := app.window
+	window := app.GetWindow()
 	surface, err := window.GetSurface()
 	if err != nil {
 		panic(err)
