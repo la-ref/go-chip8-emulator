@@ -42,6 +42,10 @@ func (a *App) ClearScreen() error {
 	return nil
 }
 
+func (a *App) Update() {
+	a.renderer.Present()
+}
+
 func NewApp(config *AppConfig) (*App, error) {
 	err := utils.InitSdl()
 	if err != nil {
