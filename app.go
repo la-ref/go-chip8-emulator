@@ -5,8 +5,9 @@ import (
 )
 
 type App struct {
-	window *sdl.Window
-	config *AppConfig
+	window   *sdl.Window
+	renderer *sdl.Renderer
+	config   *AppConfig
 }
 
 type AppConfig struct {
@@ -16,6 +17,7 @@ type AppConfig struct {
 }
 
 func (a *App) HandleQuit() {
+	a.renderer.Destroy()
 	a.window.Destroy()
 	sdl.Quit()
 }
@@ -37,9 +39,14 @@ func NewApp(config *AppConfig) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	renderer, err := createRenderer(window)
+	if err != nil {
+		return nil, err
+	}
 	app := &App{
-		window: window,
-		config: config,
+		window:   window,
+		config:   config,
+		renderer: renderer,
 	}
 	return app, nil
 }
@@ -59,4 +66,12 @@ func createWindow(config *AppConfig) (*sdl.Window, error) {
 		return nil, err
 	}
 	return window, nil
+}
+
+func createRenderer(window *sdl.Window) (*sdl.Renderer, error) {
+	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		return nil, err
+	}
+	return renderer, nil
 }

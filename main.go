@@ -2,8 +2,14 @@ package main
 
 import "github.com/veandco/go-sdl2/sdl"
 
+const (
+	WIN_TITLE  = "CHIP8 Emulator"
+	WIN_WIDTH  = 64
+	WIN_HEIGHT = 32
+)
+
 func main() {
-	config := NewAppConfig("CHIP8 Emulator", 600, 600)
+	config := NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH)
 	app, err := NewApp(config)
 	if err != nil {
 		panic(err)
