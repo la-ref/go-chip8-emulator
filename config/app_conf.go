@@ -1,4 +1,4 @@
-package app
+package config
 
 type AppConfig struct {
 	winHeight int32

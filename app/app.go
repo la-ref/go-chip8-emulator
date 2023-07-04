@@ -1,6 +1,7 @@
 package app
 
 import (
+	conf "emulator/config"
 	utils "emulator/utils"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -8,7 +9,7 @@ import (
 type App struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
-	config   *AppConfig
+	config   *conf.AppConfig
 }
 
 func (a *App) GetWindow() *sdl.Window {
@@ -19,7 +20,7 @@ func (a *App) GetRenderer() *sdl.Renderer {
 	return a.renderer
 }
 
-func (a *App) GetConfig() *AppConfig {
+func (a *App) GetConfig() *conf.AppConfig {
 	return a.config
 }
 
@@ -30,7 +31,7 @@ func (a *App) HandleQuit() {
 }
 
 func (a *App) ClearScreen() error {
-	r, g, b, alpha := utils.BytesToRGBA(a.config.bgColor)
+	r, g, b, alpha := utils.BytesToRGBA(a.config.GetBgColor())
 	err := a.renderer.SetDrawColor(r, g, b, alpha)
 	if err != nil {
 		return err
@@ -46,7 +47,7 @@ func (a *App) Update() {
 	a.renderer.Present()
 }
 
-func NewApp(config *AppConfig) (*App, error) {
+func NewApp(config *conf.AppConfig) (*App, error) {
 	err := utils.InitSdl()
 	if err != nil {
 		return nil, err

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"emulator/app"
+	config "emulator/config"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -13,7 +13,7 @@ func InitSdl() error {
 	return nil
 }
 
-func CreateWindow(config *app.AppConfig) (*sdl.Window, error) {
+func CreateWindow(config *config.AppConfig) (*sdl.Window, error) {
 	window, err := sdl.CreateWindow(config.GetWinTitle(), sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED,
 		config.GetWinWidth(), config.GetWinHeight(), sdl.WINDOW_SHOWN)
 	if err != nil {

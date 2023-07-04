@@ -2,6 +2,7 @@ package main
 
 import (
 	application "emulator/app"
+	config2 "emulator/config"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -14,7 +15,7 @@ const (
 )
 
 func main() {
-	config := application.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, FG_COLOR, BG_COLOR)
+	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, FG_COLOR, BG_COLOR)
 	app, err := application.NewApp(config)
 	if err != nil {
 		panic(err)
