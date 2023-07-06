@@ -4,14 +4,16 @@ import (
 	application "emulator/app"
 	config2 "emulator/config"
 	"github.com/veandco/go-sdl2/sdl"
+	"time"
 )
 
 const (
-	WIN_TITLE  = "CHIP8 Emulator"
-	WIN_WIDTH  = 64
-	WIN_HEIGHT = 32
-	FG_COLOR   = 0xffffffff
-	BG_COLOR   = 0x00000000
+	WIN_TITLE    = "CHIP8 Emulator"
+	WIN_WIDTH    = 64
+	WIN_HEIGHT   = 32
+	FG_COLOR     = 0xffffffff
+	BG_COLOR     = 0x00000000
+	TARGET_FRAME = 1000 / 60
 )
 
 func main() {
@@ -34,13 +36,13 @@ func main() {
 	surface.FillRect(&rect, pixel)
 	window.UpdateSurface()
 
-	running := true
-	for running {
+	for {
+		time.Sleep(TARGET_FRAME)
+
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				println("Quit")
-				running = false
 				break
 			}
 		}
