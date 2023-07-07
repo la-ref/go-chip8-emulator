@@ -3,6 +3,7 @@ package main
 import (
 	application "emulator/app"
 	config2 "emulator/config"
+	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 	"time"
 )
@@ -13,7 +14,8 @@ const (
 	WIN_HEIGHT   = 32
 	FG_COLOR     = 0xffffffff
 	BG_COLOR     = 0x00000000
-	TARGET_FRAME = 1000 / 60
+	TARGET_FPS   = 60
+	TARGET_FRAME = 1000 / TARGET_FPS
 )
 
 func main() {
@@ -36,15 +38,25 @@ func main() {
 	surface.FillRect(&rect, pixel)
 	window.UpdateSurface()
 
-	for {
+	previousTime := sdl.GetTicks()
+	running := true
+	for running {
 		time.Sleep(TARGET_FRAME)
-
+		currentTime := sdl.GetTicks()
+		deltaTime := currentTime - previousTime
+		fmt.Println(currentTime, previousTime, deltaTime)
+		previousTime = currentTime
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
 				println("Quit")
+				running = false
 				break
 			}
+		}
+		frameTime := sdl.GetTicks() - currentTime
+		if frameTime < TARGET_FRAME {
+			sdl.Delay(TARGET_FRAME - frameTime)
 		}
 	}
 }
