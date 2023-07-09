@@ -5,7 +5,6 @@ import (
 	config2 "emulator/config"
 	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
-	"time"
 )
 
 const (
@@ -41,11 +40,6 @@ func main() {
 	previousTime := sdl.GetTicks()
 	running := true
 	for running {
-		time.Sleep(TARGET_FRAME)
-		currentTime := sdl.GetTicks()
-		deltaTime := currentTime - previousTime
-		fmt.Println(currentTime, previousTime, deltaTime)
-		previousTime = currentTime
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
@@ -54,7 +48,11 @@ func main() {
 				break
 			}
 		}
-		frameTime := sdl.GetTicks() - currentTime
+		currentTime := sdl.GetTicks()
+		deltaTime := currentTime - previousTime
+		fmt.Println(currentTime, previousTime, deltaTime)
+		previousTime = currentTime
+		frameTime := sdl.GetTicks() - previousTime
 		if frameTime < TARGET_FRAME {
 			sdl.Delay(TARGET_FRAME - frameTime)
 		}
