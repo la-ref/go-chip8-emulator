@@ -2,6 +2,15 @@ package chip8
 
 const ENTRY_POINT = 0x200 // Program starts at 512 - 0010 0000 0000
 
+/*
+Fonts are read from left to right and creating the font up to bottom
+Exemple for 0 :
+1111 0000
+1001 0000
+1001 0000
+1001 0000
+1111 0000
+*/
 var FONTS = [16 * 5]uint8{
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -35,23 +44,23 @@ Shift Register (DT) and Sound Register (ST): These registers are used to manage 
 The DT register is used for delay counting, while the ST register is used to generate sounds.
 */
 type Chip8 struct {
-	ram     [4096]uint8
-	display [64 * 32]bool
-	stack   [12]uint16
-	keypad  [16]bool
+	Ram     [4096]uint8
+	Display [64 * 32]bool
+	Stack   [12]uint16
+	Keypad  [16]bool
 	V       [16]uint8 // data registers V0-VF
 	I       uint16    // register index
 	PC      uint16    // program counter
 	DT      uint8     // delay timer
 	ST      uint8     // sound timer
 
-	font [16 * 5]uint8
-	rom  string
+	rom string
 }
 
 func NewChip8(rom string) *Chip8 {
-	return &Chip8{
-		PC:   ENTRY_POINT,
-		font: FONTS,
+	chip := &Chip8{
+		PC: ENTRY_POINT,
 	}
+	copy(chip.Ram[:], FONTS[:])
+	return chip
 }
