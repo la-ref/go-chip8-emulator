@@ -4,6 +4,7 @@ import (
 	application "emulator/app"
 	config2 "emulator/config"
 	"emulator/utils"
+	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -20,11 +21,17 @@ const (
 
 func handleEvents(app *application.App) {
 	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-		switch event.(type) {
+		switch e := event.(type) {
 		case *sdl.QuitEvent:
 			println("Quit")
 			app.SetState(utils.STOPPED)
 			break
+		case *sdl.KeyboardEvent:
+			if e.Type == sdl.KEYDOWN {
+				keyCode := e.Keysym.Sym
+				fmt.Println(keyCode)
+			}
+
 		}
 	}
 }
