@@ -43,7 +43,7 @@ func (a *App) ClearScreen() error {
 	return nil
 }
 
-func (a *App) Update() {
+func (a *App) Update(dt uint32) {
 	a.renderer.Present()
 }
 
