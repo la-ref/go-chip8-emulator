@@ -5,6 +5,14 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+type State int
+
+const (
+	STOPPED State = iota
+	RUNNING
+	PAUSED
+)
+
 func InitSdl() error {
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_AUDIO | sdl.INIT_TIMER)
 	if err != nil {

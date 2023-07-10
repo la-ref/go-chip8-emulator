@@ -10,6 +10,7 @@ type App struct {
 	window   *sdl.Window
 	renderer *sdl.Renderer
 	config   *conf.AppConfig
+	state    utils.State
 }
 
 func (a *App) GetWindow() *sdl.Window {
@@ -22,6 +23,14 @@ func (a *App) GetRenderer() *sdl.Renderer {
 
 func (a *App) GetConfig() *conf.AppConfig {
 	return a.config
+}
+
+func (a *App) GetState() utils.State {
+	return a.state
+}
+
+func (a *App) SetState(state utils.State) {
+	a.state = state
 }
 
 func (a *App) HandleQuit() {
@@ -64,6 +73,7 @@ func NewApp(config *conf.AppConfig) (*App, error) {
 		window:   window,
 		config:   config,
 		renderer: renderer,
+		state:    utils.RUNNING,
 	}
 	return app, nil
 }

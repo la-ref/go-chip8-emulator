@@ -28,10 +28,10 @@ func (a AppConfig) GetBgColor() uint32 {
 	return a.bgColor
 }
 
-func NewAppConfig(title string, height, width int32, fg, bg uint32) *AppConfig {
+func NewAppConfig(title string, height, width, scale int32, fg, bg uint32) *AppConfig {
 	return &AppConfig{
-		winHeight: height,
-		winWidth:  width,
+		winHeight: height * scale,
+		winWidth:  width * scale,
 		winTitle:  title,
 		fgColor:   fg,
 		bgColor:   bg,
