@@ -1,5 +1,7 @@
 package chip8
 
+import "emulator/utils"
+
 const ENTRY_POINT = 0x200 // Program starts at 512 - 0010 0000 0000
 
 /*
@@ -58,6 +60,8 @@ type Chip8 struct {
 }
 
 func NewChip8(rom string) *Chip8 {
+	_ = utils.ReadFile(rom)
+
 	chip := &Chip8{
 		PC: ENTRY_POINT,
 	}
