@@ -1,6 +1,9 @@
 package chip8
 
-import "emulator/utils"
+import (
+	"fmt"
+	"os"
+)
 
 const ENTRY_POINT = 0x200 // Program starts at 512 - 0010 0000 0000
 
@@ -60,11 +63,39 @@ type Chip8 struct {
 }
 
 func NewChip8(rom string) *Chip8 {
-	_ = utils.ReadFile(rom)
 
 	chip := &Chip8{
 		PC: ENTRY_POINT,
 	}
 	copy(chip.Ram[:], FONTS[:])
 	return chip
+}
+
+func (c *Chip8) LoadFile(fileName string) error {
+	file, err := os.OpenFile(fileName, os.O_RDONLY, 0777)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	stat, err := file.Stat()
+	if err != nil {
+		return err
+	}
+
+	size := int64(len(c.Ram) - ENTRY_POINT)
+	if size < stat.Size() { // program is loaded at 0x200
+		return fmt.Errorf("Program size bigger than memory size")
+	}
+
+	buffer := make([]byte, stat.Size())
+	if _, readErr := file.Read(buffer); readErr != nil {
+		return readErr
+	}
+
+	for i := 0; i < len(buffer); i++ {
+		c.Ram[i+ENTRY_POINT] = buffer[i]
+	}
+
+	return nil
 }

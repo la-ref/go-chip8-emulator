@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"reflect"
 )
@@ -22,23 +21,7 @@ func ReadFile(filePath string) []byte {
 	return data
 }
 
-func SizeOf(v []any) {
-	rv := reflect.ValueOf(v)
-	len, cap := sizeof(rv)
-	fmt.Printf("%v => len: %d bytes, cap: %d bytes\n", rv.Type(), len, cap)
-}
-
-func sizeof(rv reflect.Value) (int, int) {
-	rt := rv.Type()
-
-	switch rt.Kind() {
-	case reflect.Slice:
-		size := int(rt.Size())
-		if rv.Len() > 0 {
-			l, c := sizeof(rv.Index(0))
-			return size + (l * rv.Len()), size + (c * rv.Cap())
-		}
-	}
-
-	return int(rt.Size()), int(rt.Size())
+func Sizeof(s any) int {
+	v := reflect.ValueOf(s)
+	return v.Len() * int(v.Type().Elem().Size())
 }
