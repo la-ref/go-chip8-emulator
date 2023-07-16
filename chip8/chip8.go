@@ -1,6 +1,7 @@
 package chip8
 
 import (
+	"emulator/app"
 	"fmt"
 	"os"
 )
@@ -52,6 +53,7 @@ type Chip8 struct {
 	Ram     [4096]uint8
 	Display [64 * 32]bool
 	Stack   [12]uint16
+	SP      uint16
 	Keypad  [16]bool
 	V       [16]uint8 // data registers V0-VF
 	I       uint16    // register index
@@ -59,16 +61,81 @@ type Chip8 struct {
 	DT      uint8     // delay timer
 	ST      uint8     // sound timer
 
-	rom string
+	inst *instructions
+	app  *app.App
+}
+
+type instructions struct {
+	OpCode uint16
+	NNN    uint16
+	NN     uint8
+	N      uint8
+	X      uint8
+	Y      uint8
+}
+
+func (i *instructions) Init(opCode uint16) {
+	i.OpCode = opCode
+	i.NNN = i.OpCode & 0x0FFF
+	i.NN = uint8(i.OpCode & 0x00FF)
+	i.N = uint8(i.OpCode & 0x000F)
+	i.X = uint8(i.OpCode >> 8 & 0x000F)
+	i.Y = uint8(i.OpCode >> 4 & 0x000F)
 }
 
 func NewChip8(rom string) *Chip8 {
 
 	chip := &Chip8{
-		PC: ENTRY_POINT,
+		PC:   ENTRY_POINT,
+		inst: new(instructions),
 	}
 	copy(chip.Ram[:], FONTS[:])
 	return chip
+}
+
+/*
+https://en.wikipedia.org/wiki/CHIP-8
+*/
+func (c *Chip8) cycle() error {
+	c.inst.Init((uint16(c.Ram[c.PC]) << 8) | uint16(c.Ram[c.PC+1]))
+	c.PC += 2
+	switch (c.inst.OpCode >> 12) & 0x000F {
+	case 0x00:
+		if c.inst.NN == 0xE0 {
+			// Clear screen
+			for i := range c.Display {
+				c.Display[i] = false
+			}
+		} else if c.inst.NN == 0xEE {
+			// Subroutine return
+			c.SP = c.SP - 1
+			c.PC = c.Stack[c.SP]
+		}
+	case 0x01:
+	case 0x02:
+		// Call subroutine at NNN
+		c.Stack[c.SP] = c.PC
+		c.SP++
+		c.PC = c.inst.NNN
+	case 0x03:
+	case 0x04:
+	case 0x05:
+	case 0x06:
+	case 0x09:
+	case 0x0A:
+	case 0x0B:
+	case 0x0C:
+	case 0x0D:
+	case 0x0E:
+	case 0x0F:
+	default:
+
+	}
+	return nil
+}
+
+func (c *Chip8) Update() {
+	c.cycle()
 }
 
 func (c *Chip8) LoadFile(fileName string) error {

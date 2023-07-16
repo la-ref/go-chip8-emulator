@@ -4,7 +4,6 @@ import (
 	application "emulator/app"
 	config2 "emulator/config"
 	"emulator/utils"
-	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -28,8 +27,17 @@ func handleEvents(app *application.App) {
 			break
 		case *sdl.KeyboardEvent:
 			if e.Type == sdl.KEYDOWN {
-				keyCode := e.Keysym.Sym
-				fmt.Println(keyCode)
+				switch e.Keysym.Sym {
+				case sdl.K_ESCAPE:
+					app.SetState(utils.STOPPED)
+					break
+				case sdl.K_SPACE:
+					if app.GetState() == utils.RUNNING {
+						app.SetState(utils.PAUSED)
+					} else {
+						app.SetState(utils.RUNNING)
+					}
+				}
 			}
 
 		}
