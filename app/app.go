@@ -1,6 +1,7 @@
 package app
 
 import (
+	"emulator/chip8"
 	conf "emulator/config"
 	utils "emulator/utils"
 	"github.com/veandco/go-sdl2/sdl"
@@ -11,6 +12,8 @@ type App struct {
 	renderer *sdl.Renderer
 	config   *conf.AppConfig
 	state    utils.State
+
+	chip8 *chip8.Chip8
 }
 
 func (a *App) GetWindow() *sdl.Window {
@@ -52,11 +55,16 @@ func (a *App) ClearScreen() error {
 	return nil
 }
 
-func (a *App) Update(dt uint32) {
+func (a *App) Draw() {
+	a.chip8.Draw(a.renderer)
 	a.renderer.Present()
 }
 
-func NewApp(config *conf.AppConfig) (*App, error) {
+func (a *App) Update(dt uint32) {
+	a.chip8.Update(dt)
+}
+
+func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 	err := utils.InitSdl()
 	if err != nil {
 		return nil, err
@@ -74,6 +82,7 @@ func NewApp(config *conf.AppConfig) (*App, error) {
 		config:   config,
 		renderer: renderer,
 		state:    utils.RUNNING,
+		chip8:    chip,
 	}
 	return app, nil
 }

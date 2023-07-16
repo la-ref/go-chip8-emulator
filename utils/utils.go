@@ -25,3 +25,17 @@ func Sizeof(s any) int {
 	v := reflect.ValueOf(s)
 	return v.Len() * int(v.Type().Elem().Size())
 }
+
+func B2i(b bool) uint8 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func I2b(i uint8) bool {
+	if i > 0 {
+		return true
+	}
+	return false
+}

@@ -1,8 +1,10 @@
 package chip8
 
 import (
-	"emulator/app"
+	"emulator/config"
+	"emulator/utils"
 	"fmt"
+	"github.com/veandco/go-sdl2/sdl"
 	"os"
 )
 
@@ -61,8 +63,8 @@ type Chip8 struct {
 	DT      uint8     // delay timer
 	ST      uint8     // sound timer
 
-	inst *instructions
-	app  *app.App
+	inst   *instructions
+	config *config.AppConfig
 }
 
 type instructions struct {
@@ -83,14 +85,20 @@ func (i *instructions) Init(opCode uint16) {
 	i.Y = uint8(i.OpCode >> 4 & 0x000F)
 }
 
-func NewChip8(rom string) *Chip8 {
+func NewChip8(fileName string, config *config.AppConfig) (*Chip8, error) {
 
 	chip := &Chip8{
-		PC:   ENTRY_POINT,
-		inst: new(instructions),
+		PC:     ENTRY_POINT,
+		inst:   new(instructions),
+		config: config,
+	}
+	err := chip.loadFile(fileName)
+	if err != nil {
+		return nil, err
 	}
 	copy(chip.Ram[:], FONTS[:])
-	return chip
+
+	return chip, nil
 }
 
 /*
@@ -108,7 +116,7 @@ func (c *Chip8) cycle() error {
 			}
 		} else if c.inst.NN == 0xEE {
 			// Subroutine return
-			c.SP = c.SP - 1
+			c.SP--
 			c.PC = c.Stack[c.SP]
 		}
 	case 0x01:
@@ -121,11 +129,45 @@ func (c *Chip8) cycle() error {
 	case 0x04:
 	case 0x05:
 	case 0x06:
+		// Set VX to NN
+		c.V[c.inst.X] = c.inst.NN
 	case 0x09:
 	case 0x0A:
+		// Set I to NNN
+		c.I = c.inst.NNN
 	case 0x0B:
 	case 0x0C:
 	case 0x0D:
+		// Draw sprite at X, Y
+		fmt.Println("my width", c.config.GetWinWidth())
+		X := c.V[c.inst.X] % uint8(c.config.GetWinWidth())
+		Y := c.V[c.inst.Y] % uint8(c.config.GetWinHeight())
+		c.V[0x0F] = 0
+		var i uint8
+		for i = 0; i < c.inst.N; i++ { // rows iterate Y coord
+			if Y >= 32 {
+				break
+			}
+			spriteData := c.Ram[c.I+uint16(i)] // row X coord
+
+			X_copy := X
+			var j uint8
+			for j = 7; j >= 0; j-- {
+				if X_copy >= 64 {
+					break
+				}
+				pixel := &c.Display[Y*uint8(c.config.GetWinWidth())+X]
+				spriteBit := spriteData & (1 << j)
+
+				if spriteBit > 0 && *pixel {
+					c.V[0x0F] = 1
+				}
+				*pixel = utils.I2b(utils.B2i(*pixel) ^ spriteBit)
+
+				X_copy++
+			}
+			Y++
+		}
 	case 0x0E:
 	case 0x0F:
 	default:
@@ -134,11 +176,28 @@ func (c *Chip8) cycle() error {
 	return nil
 }
 
-func (c *Chip8) Update() {
+func (c *Chip8) Update(dt uint32) {
 	c.cycle()
 }
 
-func (c *Chip8) LoadFile(fileName string) error {
+func (c *Chip8) Draw(renderer *sdl.Renderer) {
+	br, bg, bb, balpha := utils.BytesToRGBA(c.config.GetBgColor())
+	fr, fg, fb, falpha := utils.BytesToRGBA(c.config.GetFgColor())
+	rect := &sdl.Rect{X: 0, Y: 0, W: c.config.GetScale(), H: c.config.GetScale()}
+	for i := 0; i < len(c.Display); i++ {
+		rect.X = int32(i) % c.config.GetWinWidth()
+		rect.Y = int32(i) / c.config.GetWinWidth()
+		if c.Display[i] {
+			renderer.SetDrawColor(fr, fg, fb, falpha)
+			renderer.FillRect(rect)
+		} else {
+			renderer.SetDrawColor(br, bg, bb, balpha)
+			renderer.FillRect(rect)
+		}
+	}
+}
+
+func (c *Chip8) loadFile(fileName string) error {
 	file, err := os.OpenFile(fileName, os.O_RDONLY, 0777)
 	if err != nil {
 		return err

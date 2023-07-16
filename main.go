@@ -2,8 +2,10 @@ package main
 
 import (
 	application "emulator/app"
+	chip "emulator/chip8"
 	config2 "emulator/config"
 	"emulator/utils"
+	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -46,7 +48,12 @@ func handleEvents(app *application.App) {
 
 func main() {
 	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR)
-	app, err := application.NewApp(config)
+	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
+	chip8, err := chip.NewChip8("./rom/IBM.ch8", config)
+	if err != nil {
+		panic(err)
+	}
+	app, err := application.NewApp(config, chip8)
 	if err != nil {
 		panic(err)
 	}
@@ -66,6 +73,7 @@ func main() {
 		deltaTime := currentTime - previousTime
 
 		app.Update(deltaTime)
+		app.Draw()
 
 		previousTime = currentTime
 		frameTime := sdl.GetTicks() - previousTime
