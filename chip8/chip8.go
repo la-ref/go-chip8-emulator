@@ -5,6 +5,7 @@ import (
 	"emulator/utils"
 	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
+	"math/rand"
 	"os"
 )
 
@@ -203,6 +204,8 @@ func (c *Chip8) cycle() error {
 		// Jump to V0 + NNN
 		c.PC = uint16(c.V[0]) + c.inst.NNN
 	case 0x0C:
+		// Set VX to random value % 256 & NN
+		c.V[c.inst.X] = uint8(rand.Int()%256) & c.inst.NN
 	case 0x0D:
 		// Draw sprite at X, Y
 		X := c.V[c.inst.X] % 64
@@ -233,8 +236,33 @@ func (c *Chip8) cycle() error {
 			Y++
 		}
 	case 0x0E:
+		if c.inst.NN == 0x9E {
+			// Skip instruction if key in VX is pressed
+			if c.Keypad[c.V[c.inst.X]] {
+				c.PC += 2
+			}
+		} else if c.inst.NN == 0xA1 {
+			// Skip instruction if key in VX is not pressed
+			if !c.Keypad[c.V[c.inst.X]] {
+				c.PC += 2
+			}
+		}
 	case 0x0F:
-	default:
+		switch c.inst.NN {
+		case 0x0A:
+			//c.V[c.inst.X] =
+		case 0x1E:
+			c.I += uint16(c.inst.X)
+		case 0x07:
+
+		case 0x15:
+		case 0x18:
+		case 0x29:
+			c.I = uint16(c.Ram[c.inst.X])
+		case 0x33:
+		case 0x55:
+		case 0x65:
+		}
 
 	}
 	return nil

@@ -18,38 +18,14 @@ const (
 	BG_COLOR     = 0x00000000
 	TARGET_FPS   = 60
 	TARGET_FRAME = 1000 / TARGET_FPS
+
+	ROM = "./rom/test_opcode.ch8"
 )
-
-func handleEvents(app *application.App) {
-	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-		switch e := event.(type) {
-		case *sdl.QuitEvent:
-			println("Quit")
-			app.SetState(utils.STOPPED)
-			break
-		case *sdl.KeyboardEvent:
-			if e.Type == sdl.KEYDOWN {
-				switch e.Keysym.Sym {
-				case sdl.K_ESCAPE:
-					app.SetState(utils.STOPPED)
-					break
-				case sdl.K_SPACE:
-					if app.GetState() == utils.RUNNING {
-						app.SetState(utils.PAUSED)
-					} else {
-						app.SetState(utils.RUNNING)
-					}
-				}
-			}
-
-		}
-	}
-}
 
 func main() {
 	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR)
 	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
-	chip8, err := chip.NewChip8("./rom/test_opcode.ch8", config)
+	chip8, err := chip.NewChip8(ROM, config)
 	if err != nil {
 		panic(err)
 	}
