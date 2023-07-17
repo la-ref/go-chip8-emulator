@@ -170,11 +170,15 @@ func (c *Chip8) cycle() error {
 			c.V[c.inst.X] += c.V[c.inst.Y]
 			if c.V[c.inst.X] > 255 {
 				c.V[0x0F] = 1
+			} else {
+				c.V[0x0F] = 0
 			}
 		case 5:
 			// Substract VY to VX
 			if c.V[c.inst.X] >= c.V[c.inst.Y] { // Not a Borrow ( if positive )
 				c.V[0x0F] = 1
+			} else { // Borrow (negative)
+				c.V[0x0F] = 0
 			}
 			c.V[c.inst.X] -= c.V[c.inst.Y]
 		case 6:
@@ -185,11 +189,13 @@ func (c *Chip8) cycle() error {
 			// Subtract VX to VY and set it to VX
 			if c.V[c.inst.X] <= c.V[c.inst.Y] { // Not a Borrow ( if positive )
 				c.V[0x0F] = 1
+			} else { // Borrow (negative)
+				c.V[0x0F] = 0
 			}
 			c.V[c.inst.X] = c.V[c.inst.Y] - c.V[c.inst.X]
 		case 0xE:
 			// Set VX <<= 1, store the shifted bit in VF
-			c.V[0x0F] = c.V[c.inst.X] & 0x80
+			c.V[0x0F] = (c.V[c.inst.X] & 0x80) >> 7
 			c.V[c.inst.X] <<= 1
 		}
 	case 0x09:
@@ -250,18 +256,52 @@ func (c *Chip8) cycle() error {
 	case 0x0F:
 		switch c.inst.NN {
 		case 0x0A:
-			//c.V[c.inst.X] =
+			// await a keypress and store into VX
+			keyPressed := false
+			var i uint8
+			for i = 0; i < uint8(len(c.Keypad)); i++ {
+				if c.Keypad[i] {
+					c.V[c.inst.X] = i
+					keyPressed = true
+					break
+				}
+			}
+			// Keep running the current opCode
+			if !keyPressed {
+				c.PC -= 2
+			}
 		case 0x1E:
-			c.I += uint16(c.inst.X)
+			c.I += uint16(c.V[c.inst.X])
 		case 0x07:
-
+			// VX = Delay Timer
+			c.V[c.inst.X] = c.DT
 		case 0x15:
+			// Delay timer = VX
+			c.DT = c.V[c.inst.X]
 		case 0x18:
+			// Sound timer = VX
+			c.ST = c.V[c.inst.X]
 		case 0x29:
-			c.I = uint16(c.Ram[c.inst.X])
+			// Set I to sprite font location at VX
+			c.I = uint16(c.V[c.inst.X]) * 0x5
 		case 0x33:
+			// Store BCD representation of VX in memory offset I
+			bcd := c.V[c.inst.X]
+			for i := 2; i >= 0; i-- {
+				c.Ram[c.I+uint16(i)] = bcd % 10
+				bcd /= 10
+			}
 		case 0x55:
+			// Memory register dump V0-VX
+			for i := 0; i < int(c.inst.X)+1; i++ {
+				c.Ram[c.I+uint16(i)] = c.V[i]
+			}
+			//c.I += 1
 		case 0x65:
+			// Memory register load V0-VX
+			for i := 0; i < int(c.inst.X)+1; i++ {
+				c.V[i] = c.Ram[c.I+uint16(i)]
+			}
 		}
 
 	}

@@ -13,7 +13,8 @@ type App struct {
 	config   *conf.AppConfig
 	state    utils.State
 
-	chip8 *chip8.Chip8
+	chip8   *chip8.Chip8
+	keybind map[sdl.Keycode]byte
 }
 
 func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
@@ -35,6 +36,7 @@ func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 		renderer: renderer,
 		state:    utils.RUNNING,
 		chip8:    chip,
+		keybind:  chip8.AzertyKeyMap,
 	}
 	return app, nil
 }
@@ -98,41 +100,8 @@ func (a *App) handleInputs(e sdl.Keycode) bool {
 		} else {
 			a.SetState(utils.RUNNING)
 		}
-	case sdl.K_1:
-		a.chip8.Keypad[0x1] = true
-	case sdl.K_2:
-		a.chip8.Keypad[0x2] = true
-	case sdl.K_3:
-		a.chip8.Keypad[0x3] = true
-	case sdl.K_4:
-		a.chip8.Keypad[0xC] = true
-
-	case sdl.K_a:
-		a.chip8.Keypad[0x4] = true
-	case sdl.K_z:
-		a.chip8.Keypad[0x5] = true
-	case sdl.K_e:
-		a.chip8.Keypad[0x6] = true
-	case sdl.K_r:
-		a.chip8.Keypad[0xD] = true
-
-	case sdl.K_q:
-		a.chip8.Keypad[0x7] = true
-	case sdl.K_s:
-		a.chip8.Keypad[0x8] = true
-	case sdl.K_d:
-		a.chip8.Keypad[0x9] = true
-	case sdl.K_f:
-		a.chip8.Keypad[0xE] = true
-
-	case sdl.K_w:
-		a.chip8.Keypad[0xA] = true
-	case sdl.K_x:
-		a.chip8.Keypad[0x0] = true
-	case sdl.K_c:
-		a.chip8.Keypad[0xB] = true
-	case sdl.K_v:
-		a.chip8.Keypad[0xF] = true
+	default:
+		a.chip8.Keypad[a.keybind[e]] = true
 	}
 	return false
 }

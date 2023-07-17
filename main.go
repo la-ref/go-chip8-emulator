@@ -19,7 +19,7 @@ const (
 	TARGET_FPS   = 60
 	TARGET_FRAME = 1000 / TARGET_FPS
 
-	ROM = "./rom/test_opcode.ch8"
+	ROM = "./rom/bc_test.ch8"
 )
 
 func main() {
