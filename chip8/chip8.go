@@ -192,10 +192,16 @@ func (c *Chip8) cycle() error {
 			c.V[c.inst.X] <<= 1
 		}
 	case 0x09:
+		// Skip to the next instruction if VX not equal to VY
+		if c.V[c.inst.X] != c.V[c.inst.Y] {
+			c.PC += 2
+		}
 	case 0x0A:
 		// Set I to NNN
 		c.I = c.inst.NNN
 	case 0x0B:
+		// Jump to V0 + NNN
+		c.PC = uint16(c.V[0]) + c.inst.NNN
 	case 0x0C:
 	case 0x0D:
 		// Draw sprite at X, Y
