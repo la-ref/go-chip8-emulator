@@ -227,7 +227,7 @@ func (c *Chip8) cycle() error {
 			X_copy := X
 			var j int8
 			for j = 7; j >= 0; j-- {
-				if X_copy > 64 {
+				if X_copy >= 64 {
 					break
 				}
 				pixel := &c.Display[uint32(Y)*64+uint32(X_copy)]
@@ -324,8 +324,9 @@ func (c *Chip8) Clear() {
 }
 
 func (c *Chip8) Update(dt float32) {
-	var i uint32
-	for i = 0; i <= c.config.GetClockRate()*1/60; i++ {
+	fmt.Println(dt)
+	var i float32
+	for i = 0; i <= float32(c.config.GetClockRate())*dt; i++ {
 		c.cycle()
 	}
 	c.timer()
