@@ -7,6 +7,7 @@ type AppConfig struct {
 	winTitle  string
 	fgColor   uint32
 	bgColor   uint32
+	clockRate uint32
 }
 
 func (a *AppConfig) GetWinHeight() int32 {
@@ -33,7 +34,11 @@ func (a *AppConfig) GetBgColor() uint32 {
 	return a.bgColor
 }
 
-func NewAppConfig(title string, height, width, scale int32, fg, bg uint32) *AppConfig {
+func (a *AppConfig) GetClockRate() uint32 {
+	return a.clockRate
+}
+
+func NewAppConfig(title string, height, width, scale int32, fg, bg, cr uint32) *AppConfig {
 	return &AppConfig{
 		winHeight: height * scale,
 		winWidth:  width * scale,
@@ -41,5 +46,6 @@ func NewAppConfig(title string, height, width, scale int32, fg, bg uint32) *AppC
 		winTitle:  title,
 		fgColor:   fg,
 		bgColor:   bg,
+		clockRate: cr,
 	}
 }

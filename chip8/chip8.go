@@ -309,7 +309,10 @@ func (c *Chip8) cycle() error {
 }
 
 func (c *Chip8) Update(dt uint32) {
-	c.cycle()
+	var i uint32
+	for i = 0; i <= c.config.GetClockRate()*dt; i++ {
+		c.cycle()
+	}
 }
 
 func (c *Chip8) Draw(renderer *sdl.Renderer) {

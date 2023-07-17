@@ -18,12 +18,13 @@ const (
 	BG_COLOR     = 0x00000000
 	TARGET_FPS   = 60
 	TARGET_FRAME = 1000 / TARGET_FPS
+	CLOCK_RATE   = 500
 
-	ROM = "./rom/bc_test.ch8"
+	ROM = "./rom/pong.rom"
 )
 
 func main() {
-	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR)
+	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE)
 	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
 	chip8, err := chip.NewChip8(ROM, config)
 	if err != nil {
