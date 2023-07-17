@@ -87,7 +87,7 @@ func (a *App) Update(dt uint32) {
 	a.chip8.Update(dt)
 }
 
-func (a *App) handleInputs(e sdl.Keysym) bool {
+func (a *App) handleInputs(e sdl.Keycode) bool {
 	switch e {
 	case sdl.K_ESCAPE:
 		a.SetState(utils.STOPPED)
@@ -137,7 +137,7 @@ func (a *App) handleInputs(e sdl.Keysym) bool {
 	return false
 }
 
-func (a *App) handleEvents() {
+func (a *App) HandleEvents() {
 	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 		switch e := event.(type) {
 		case *sdl.QuitEvent:

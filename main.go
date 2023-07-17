@@ -43,7 +43,7 @@ func main() {
 	previousTime := sdl.GetTicks()
 	for app.GetState() != utils.STOPPED {
 
-		handleEvents(app)
+		app.HandleEvents()
 
 		if app.GetState() != utils.PAUSED {
 			currentTime := sdl.GetTicks()
