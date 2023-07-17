@@ -1,6 +1,7 @@
 package chip8
 
 import (
+	"emulator/audio"
 	"emulator/config"
 	"emulator/utils"
 	"fmt"
@@ -66,6 +67,7 @@ type Chip8 struct {
 
 	inst   *instructions
 	config *config.AppConfig
+	aud    *audio.Audio
 }
 
 type instructions struct {
@@ -307,12 +309,23 @@ func (c *Chip8) cycle() error {
 	return nil
 }
 
+func (c *Chip8) AddAudio(aud *audio.Audio) {
+	c.aud = aud
+}
+
 func (c *Chip8) timer() {
 	if c.DT > 0 {
 		c.DT--
 	}
 	if c.ST > 0 {
 		c.ST--
+		if c.aud != nil {
+			c.aud.PlayAudio()
+		}
+	} else {
+		if c.aud != nil {
+			c.aud.PauseAudio()
+		}
 	}
 }
 

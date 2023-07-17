@@ -1,6 +1,7 @@
 package app
 
 import (
+	audio "emulator/audio"
 	"emulator/chip8"
 	conf "emulator/config"
 	utils "emulator/utils"
@@ -15,6 +16,7 @@ type App struct {
 
 	chip8   *chip8.Chip8
 	keybind map[sdl.Keycode]byte
+	aud     *audio.Audio
 }
 
 func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
@@ -30,6 +32,10 @@ func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+	aud, err := audio.NewAudio()
+	if err != nil {
+		return nil, err
+	}
 	app := &App{
 		window:   window,
 		config:   config,
@@ -37,7 +43,9 @@ func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 		state:    utils.RUNNING,
 		chip8:    chip,
 		keybind:  chip8.AzertyKeyMap,
+		aud:      aud,
 	}
+	chip.AddAudio(aud)
 	return app, nil
 }
 
@@ -64,6 +72,7 @@ func (a *App) SetState(state utils.State) {
 func (a *App) HandleQuit() {
 	a.renderer.Destroy()
 	a.window.Destroy()
+	a.aud.HandleQuit()
 	sdl.Quit()
 }
 

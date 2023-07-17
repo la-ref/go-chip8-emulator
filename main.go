@@ -10,21 +10,23 @@ import (
 )
 
 const (
-	WIN_TITLE    = "CHIP8 Emulator"
-	WIN_WIDTH    = 64
-	WIN_HEIGHT   = 32
-	SCALE_FACTOR = 20 // Scale for each pixel
-	FG_COLOR     = 0xffffffff
-	BG_COLOR     = 0x00000000
-	TARGET_FPS   = 60
-	TARGET_FRAME = 1000 / TARGET_FPS
-	CLOCK_RATE   = 500
+	WIN_TITLE        = "CHIP8 Emulator"
+	WIN_WIDTH        = 64
+	WIN_HEIGHT       = 32
+	SCALE_FACTOR     = 20 // Scale for each pixel
+	FG_COLOR         = 0xffffffff
+	BG_COLOR         = 0x00000000
+	TARGET_FPS       = 60
+	TARGET_FRAME     = 1000 / TARGET_FPS
+	CLOCK_RATE       = 500
+	VOLUME           = 100
+	SQUARE_WAVE_FREQ = 440
 
-	ROM = "./rom/pong.rom"
+	ROM = "./rom/tetris.ch8"
 )
 
 func main() {
-	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE)
+	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, VOLUME)
 	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
 	chip8, err := chip.NewChip8(ROM, config)
 	if err != nil {
