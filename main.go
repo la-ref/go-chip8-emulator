@@ -69,16 +69,18 @@ func main() {
 
 		handleEvents(app)
 
-		currentTime := sdl.GetTicks()
-		deltaTime := currentTime - previousTime
+		if app.GetState() != utils.PAUSED {
+			currentTime := sdl.GetTicks()
+			deltaTime := currentTime - previousTime
 
-		app.Update(deltaTime)
-		app.Draw()
+			app.Update(deltaTime)
+			app.Draw()
 
-		previousTime = currentTime
-		frameTime := sdl.GetTicks() - previousTime
-		if frameTime < TARGET_FRAME {
-			sdl.Delay(TARGET_FRAME - frameTime)
+			previousTime = currentTime
+			frameTime := sdl.GetTicks() - previousTime
+			if frameTime < TARGET_FRAME {
+				sdl.Delay(TARGET_FRAME - frameTime)
+			}
 		}
 	}
 }
