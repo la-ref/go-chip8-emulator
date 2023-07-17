@@ -240,6 +240,10 @@ func (c *Chip8) cycle() error {
 				X_copy++
 			}
 			Y++
+			if rand.Int()%44782 == 0 {
+				fmt.Println(utils.Test(c.Display[:]))
+
+			}
 		}
 	case 0x0E:
 		if c.inst.NN == 0x9E {
@@ -317,9 +321,8 @@ func (c *Chip8) timer() {
 	}
 }
 
-func (c *Chip8) Update(dt uint32) {
+func (c *Chip8) Update(dt float32) {
 	var i uint32
-	fmt.Println(1 / 60)
 	for i = 0; i <= c.config.GetClockRate()*1/60; i++ {
 		c.cycle()
 	}

@@ -81,11 +81,12 @@ func (a *App) ClearScreen() error {
 }
 
 func (a *App) Draw() {
+	_ = a.ClearScreen()
 	a.chip8.Draw(a.renderer)
 	a.renderer.Present()
 }
 
-func (a *App) Update(dt uint32) {
+func (a *App) Update(dt float32) {
 	a.chip8.Update(dt)
 }
 
