@@ -50,7 +50,7 @@ func main() {
 			currentTime := sdl.GetTicks()
 			deltaTime := currentTime - previousTime
 
-			app.Update(deltaTime)
+			app.Update(deltaTime / 1000)
 			app.Draw()
 
 			previousTime = currentTime

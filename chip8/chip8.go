@@ -308,11 +308,22 @@ func (c *Chip8) cycle() error {
 	return nil
 }
 
+func (c *Chip8) timer() {
+	if c.DT > 0 {
+		c.DT--
+	}
+	if c.ST > 0 {
+		c.ST--
+	}
+}
+
 func (c *Chip8) Update(dt uint32) {
 	var i uint32
-	for i = 0; i <= c.config.GetClockRate()*dt; i++ {
+	fmt.Println(1 / 60)
+	for i = 0; i <= c.config.GetClockRate()*1/60; i++ {
 		c.cycle()
 	}
+	c.timer()
 }
 
 func (c *Chip8) Draw(renderer *sdl.Renderer) {
