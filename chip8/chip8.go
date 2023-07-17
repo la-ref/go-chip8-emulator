@@ -227,11 +227,11 @@ func (c *Chip8) cycle() error {
 			X_copy := X
 			var j int8
 			for j = 7; j >= 0; j-- {
-				if X_copy >= 64 {
+				if X_copy > 64 {
 					break
 				}
 				pixel := &c.Display[uint32(Y)*64+uint32(X_copy)]
-				spriteBit := spriteData & (1 << j)
+				spriteBit := (spriteData >> j) & 1
 
 				if spriteBit != 0 && *pixel {
 					c.V[0x0F] = 1
@@ -240,10 +240,6 @@ func (c *Chip8) cycle() error {
 				X_copy++
 			}
 			Y++
-			if rand.Int()%44782 == 0 {
-				fmt.Println(utils.Test(c.Display[:]))
-
-			}
 		}
 	case 0x0E:
 		if c.inst.NN == 0x9E {
@@ -267,10 +263,9 @@ func (c *Chip8) cycle() error {
 				if c.Keypad[i] {
 					c.V[c.inst.X] = i
 					keyPressed = true
-					break
 				}
 			}
-			// Keep running the current opCode
+			// Keep running the current opCode if no key pressed
 			if !keyPressed {
 				c.PC -= 2
 			}
@@ -319,6 +314,13 @@ func (c *Chip8) timer() {
 	if c.ST > 0 {
 		c.ST--
 	}
+}
+
+func (c *Chip8) Clear() {
+	for i := range c.Display {
+		c.Display[i] = false
+	}
+
 }
 
 func (c *Chip8) Update(dt float32) {

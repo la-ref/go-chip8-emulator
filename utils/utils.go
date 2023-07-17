@@ -39,11 +39,3 @@ func I2b(i uint8) bool {
 	}
 	return false
 }
-
-func Test(a []bool) []uint8 {
-	t := make([]uint8, len(a))
-	for i := range a {
-		t[i] = B2i(a[i])
-	}
-	return t
-}

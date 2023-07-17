@@ -90,7 +90,7 @@ func (a *App) Update(dt float32) {
 	a.chip8.Update(dt)
 }
 
-func (a *App) handleInputs(e sdl.Keycode) bool {
+func (a *App) handleInputs(e sdl.Keycode, status bool) bool {
 	switch e {
 	case sdl.K_ESCAPE:
 		a.SetState(utils.STOPPED)
@@ -102,7 +102,7 @@ func (a *App) handleInputs(e sdl.Keycode) bool {
 			a.SetState(utils.RUNNING)
 		}
 	default:
-		a.chip8.Keypad[a.keybind[e]] = true
+		a.chip8.Keypad[a.keybind[e]] = status
 	}
 	return false
 }
@@ -115,7 +115,11 @@ func (a *App) HandleEvents() {
 			break
 		case *sdl.KeyboardEvent:
 			if e.Type == sdl.KEYDOWN {
-				if a.handleInputs(e.Keysym.Sym) {
+				if a.handleInputs(e.Keysym.Sym, true) {
+					break
+				}
+			} else if e.Type == sdl.KEYUP {
+				if a.handleInputs(e.Keysym.Sym, false) {
 					break
 				}
 			}
