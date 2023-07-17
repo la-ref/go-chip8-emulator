@@ -139,9 +139,8 @@ func (c *Chip8) cycle() error {
 	case 0x0C:
 	case 0x0D:
 		// Draw sprite at X, Y
-		fmt.Println("my width", c.config.GetWinWidth())
-		X := c.V[c.inst.X] % uint8(c.config.GetWinWidth())
-		Y := c.V[c.inst.Y] % uint8(c.config.GetWinHeight())
+		X := c.V[c.inst.X] % 64
+		Y := c.V[c.inst.Y] % 32
 		c.V[0x0F] = 0
 		var i uint8
 		for i = 0; i < c.inst.N; i++ { // rows iterate Y coord
@@ -156,7 +155,7 @@ func (c *Chip8) cycle() error {
 				if X_copy >= 64 {
 					break
 				}
-				pixel := &c.Display[Y*uint8(c.config.GetWinWidth())+X]
+				pixel := &c.Display[Y*64+X]
 				spriteBit := spriteData & (1 << j)
 
 				if spriteBit > 0 && *pixel {
