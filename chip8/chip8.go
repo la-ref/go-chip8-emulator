@@ -119,6 +119,7 @@ func (c *Chip8) cycle() error {
 			c.PC = c.Stack[c.SP]
 		}
 	case 0x01:
+		// JMP to NNN
 		c.PC = c.inst.NNN
 	case 0x02:
 		// Call subroutine at NNN
@@ -126,14 +127,70 @@ func (c *Chip8) cycle() error {
 		c.SP++
 		c.PC = c.inst.NNN
 	case 0x03:
+		// Skip to the next instruction if equal
+		if c.V[c.inst.X] == c.inst.NN {
+			c.PC += 2
+		}
 	case 0x04:
+		// Skip to the next instruction if not equal
+		if c.V[c.inst.X] != c.inst.NN {
+			c.PC += 2
+		}
 	case 0x05:
+		// Skip to the next instruction if X equal Y
+		if c.inst.N != 0 {
+			break
+		}
+		if c.V[c.inst.X] == c.V[c.inst.Y] {
+			c.PC += 2
+		}
 	case 0x06:
 		// Set VX to NN
 		c.V[c.inst.X] = c.inst.NN
 	case 0x07:
 		// Add NN to VX
 		c.V[c.inst.X] += c.inst.NN
+	case 0x08:
+		switch c.inst.N {
+		case 0:
+			// Set VX to VY
+			c.V[c.inst.X] = c.V[c.inst.Y]
+		case 1:
+			// Set VX |= VY
+			c.V[c.inst.X] |= c.V[c.inst.Y]
+		case 2:
+			// Set VX &= VY
+			c.V[c.inst.X] &= c.V[c.inst.Y]
+		case 3:
+			// Set VX ^= VY
+			c.V[c.inst.X] ^= c.V[c.inst.Y]
+		case 4:
+			// Add VY to
+			c.V[c.inst.X] += c.V[c.inst.Y]
+			if c.V[c.inst.X] > 255 {
+				c.V[0x0F] = 1
+			}
+		case 5:
+			// Substract VY to VX
+			if c.V[c.inst.X] >= c.V[c.inst.Y] { // Not a Borrow ( if positive )
+				c.V[0x0F] = 1
+			}
+			c.V[c.inst.X] -= c.V[c.inst.Y]
+		case 6:
+			// Set VX >>= 1, store the shifted bit in VF
+			c.V[0x0F] = c.V[c.inst.X] & 1
+			c.V[c.inst.X] >>= 1
+		case 7:
+			// Subtract VX to VY and set it to VX
+			if c.V[c.inst.X] <= c.V[c.inst.Y] { // Not a Borrow ( if positive )
+				c.V[0x0F] = 1
+			}
+			c.V[c.inst.X] = c.V[c.inst.Y] - c.V[c.inst.X]
+		case 0xE:
+			// Set VX <<= 1, store the shifted bit in VF
+			c.V[0x0F] = c.V[c.inst.X] & 0x80
+			c.V[c.inst.X] <<= 1
+		}
 	case 0x09:
 	case 0x0A:
 		// Set I to NNN
@@ -161,11 +218,10 @@ func (c *Chip8) cycle() error {
 				pixel := &c.Display[uint32(Y)*64+uint32(X_copy)]
 				spriteBit := spriteData & (1 << j)
 
-				if spriteBit > 0 && *pixel {
+				if spriteBit != 0 && *pixel {
 					c.V[0x0F] = 1
 				}
 				*pixel = utils.I2b(utils.B2i(*pixel) ^ spriteBit)
-				fmt.Println(Y, X_copy, *pixel)
 				X_copy++
 			}
 			Y++

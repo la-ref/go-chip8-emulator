@@ -49,7 +49,7 @@ func handleEvents(app *application.App) {
 func main() {
 	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR)
 	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
-	chip8, err := chip.NewChip8("./rom/IBM.ch8", config)
+	chip8, err := chip.NewChip8("./rom/test_opcode.ch8", config)
 	if err != nil {
 		panic(err)
 	}
