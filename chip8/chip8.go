@@ -97,7 +97,6 @@ func NewChip8(fileName string, config *config.AppConfig) (*Chip8, error) {
 		return nil, err
 	}
 	copy(chip.Ram[:], FONTS[:])
-
 	return chip, nil
 }
 
@@ -120,6 +119,7 @@ func (c *Chip8) cycle() error {
 			c.PC = c.Stack[c.SP]
 		}
 	case 0x01:
+		c.PC = c.inst.NNN
 	case 0x02:
 		// Call subroutine at NNN
 		c.Stack[c.SP] = c.PC
@@ -131,6 +131,9 @@ func (c *Chip8) cycle() error {
 	case 0x06:
 		// Set VX to NN
 		c.V[c.inst.X] = c.inst.NN
+	case 0x07:
+		// Add NN to VX
+		c.V[c.inst.X] += c.inst.NN
 	case 0x09:
 	case 0x0A:
 		// Set I to NNN
@@ -150,19 +153,19 @@ func (c *Chip8) cycle() error {
 			spriteData := c.Ram[c.I+uint16(i)] // row X coord
 
 			X_copy := X
-			var j uint8
+			var j int8
 			for j = 7; j >= 0; j-- {
 				if X_copy >= 64 {
 					break
 				}
-				pixel := &c.Display[Y*64+X]
+				pixel := &c.Display[uint32(Y)*64+uint32(X_copy)]
 				spriteBit := spriteData & (1 << j)
 
 				if spriteBit > 0 && *pixel {
 					c.V[0x0F] = 1
 				}
 				*pixel = utils.I2b(utils.B2i(*pixel) ^ spriteBit)
-
+				fmt.Println(Y, X_copy, *pixel)
 				X_copy++
 			}
 			Y++
@@ -184,8 +187,9 @@ func (c *Chip8) Draw(renderer *sdl.Renderer) {
 	fr, fg, fb, falpha := utils.BytesToRGBA(c.config.GetFgColor())
 	rect := &sdl.Rect{X: 0, Y: 0, W: c.config.GetScale(), H: c.config.GetScale()}
 	for i := 0; i < len(c.Display); i++ {
-		rect.X = int32(i) % c.config.GetWinWidth()
-		rect.Y = int32(i) / c.config.GetWinWidth()
+		rect.X = int32(i) % 64 * c.config.GetScale()
+		rect.Y = int32(i) / 64 * c.config.GetScale()
+
 		if c.Display[i] {
 			renderer.SetDrawColor(fr, fg, fb, falpha)
 			renderer.FillRect(rect)
