@@ -112,6 +112,7 @@ func NewChip8(config *config.AppConfig) (*Chip8, error) {
 
 func (c *Chip8) Reset() *Chip8 {
 	chip, err := NewChip8(c.config)
+	chip.AddAudio(c.aud)
 	if err != nil {
 		return nil
 	}
