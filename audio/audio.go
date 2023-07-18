@@ -26,7 +26,7 @@ func NewAudio(audioConf *conf.AudioConfig) (*Audio, error) {
 			Freq:     int32(audioConf.GetSampleRate()),
 			Format:   sdl.AUDIO_S16LSB, // little endian
 			Channels: 1,
-			Samples:  2048,
+			Samples:  512,
 		},
 	}
 

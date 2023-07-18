@@ -1,14 +1,6 @@
 package config
 
-// #include <stdint.h>
-// #include <stdlib.h>
-// typedef struct {
-//     uint8_t volume;
-//     uint32_t squareWaveFreq;
-//     uint32_t sampleRate;
-// } AudioConfig;
-import "C"
-
+// Defined also in audio/audio.h
 type AudioConfig struct {
 	volume         uint8
 	squareWaveFreq uint32

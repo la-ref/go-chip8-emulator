@@ -88,19 +88,27 @@ func (i *instructions) Init(opCode uint16) {
 	i.Y = uint8(i.OpCode >> 4 & 0x000F)
 }
 
-func NewChip8(fileName string, config *config.AppConfig) (*Chip8, error) {
+func NewChip8(config *config.AppConfig) (*Chip8, error) {
 
 	chip := &Chip8{
 		PC:     ENTRY_POINT,
 		inst:   new(instructions),
 		config: config,
 	}
-	err := chip.loadFile(fileName)
+	err := chip.loadFile(config.GetRom())
 	if err != nil {
 		return nil, err
 	}
 	copy(chip.Ram[:], FONTS[:])
 	return chip, nil
+}
+
+func (c *Chip8) Reset() *Chip8 {
+	chip, err := NewChip8(c.config)
+	if err != nil {
+		return nil
+	}
+	return chip
 }
 
 /*

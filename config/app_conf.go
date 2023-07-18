@@ -8,6 +8,7 @@ type AppConfig struct {
 	fgColor     uint32
 	bgColor     uint32
 	clockRate   uint32
+	rom         string
 	audioConfig *AudioConfig
 }
 
@@ -43,7 +44,11 @@ func (a *AppConfig) GetAudioConfig() *AudioConfig {
 	return a.audioConfig
 }
 
-func NewAppConfig(title string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8) *AppConfig {
+func (a *AppConfig) GetRom() string {
+	return a.rom
+}
+
+func NewAppConfig(title, rom string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8) *AppConfig {
 	return &AppConfig{
 		winHeight:   height * scale,
 		winWidth:    width * scale,
@@ -53,5 +58,6 @@ func NewAppConfig(title string, height, width, scale int32, fg, bg, cr, freq, sa
 		bgColor:     bg,
 		clockRate:   cr,
 		audioConfig: NewAudioConfig(volume, freq, sample),
+		rom:         rom,
 	}
 }

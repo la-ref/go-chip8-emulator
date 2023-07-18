@@ -26,8 +26,8 @@ const (
 )
 
 func main() {
-	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
-	chip8, err := chip.NewChip8(ROM, config)
+	config := config2.NewAppConfig(WIN_TITLE, ROM, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
+	chip8, err := chip.NewChip8(config)
 	if err != nil {
 		panic(err)
 	}
