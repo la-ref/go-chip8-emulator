@@ -5,7 +5,6 @@ import (
 	chip "emulator/chip8"
 	config2 "emulator/config"
 	"emulator/utils"
-	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -18,7 +17,7 @@ const (
 	BG_COLOR         = 0x00000000
 	TARGET_FPS       = 60
 	TARGET_FRAME     = 1000 / TARGET_FPS
-	CLOCK_RATE       = 500
+	CLOCK_RATE       = 600
 	VOLUME           = 100
 	SQUARE_WAVE_FREQ = 440
 	SAMPLE_RATE      = 44100
@@ -28,7 +27,6 @@ const (
 
 func main() {
 	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
-	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
 	chip8, err := chip.NewChip8(ROM, config)
 	if err != nil {
 		panic(err)

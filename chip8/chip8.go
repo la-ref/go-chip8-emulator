@@ -337,7 +337,6 @@ func (c *Chip8) Clear() {
 }
 
 func (c *Chip8) Update(dt float32) {
-	fmt.Println(dt)
 	var i float32
 	for i = 0; i <= float32(c.config.GetClockRate())*dt; i++ {
 		c.cycle()
