@@ -4,7 +4,6 @@ package audio
 import "C"
 import (
 	conf "emulator/config"
-	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 	"reflect"
 	"unsafe"
@@ -27,10 +26,9 @@ func NewAudio(audioConf *conf.AudioConfig) (*Audio, error) {
 			Freq:     int32(audioConf.GetSampleRate()),
 			Format:   sdl.AUDIO_S16LSB, // little endian
 			Channels: 1,
-			Samples:  4096,
+			Samples:  2048,
 		},
 	}
-	fmt.Println(audioConf)
 
 	cAudioConf := (*C.AudioConfig)(C.malloc(C.size_t(unsafe.Sizeof(C.AudioConfig{}))))
 	cAudioConf.volume = C.uint8_t(audioConf.GetVolume())
@@ -51,12 +49,10 @@ func NewAudio(audioConf *conf.AudioConfig) (*Audio, error) {
 //export AudioCallback
 func AudioCallback(userdata unsafe.Pointer, _stream *C.uint8_t, _length C.int) {
 	data := (*conf.AudioConfig)(userdata)
-	fmt.Println(data, "data")
 	length := int(_length) / 2
 	header := reflect.SliceHeader{Data: uintptr(unsafe.Pointer(_stream)), Len: length, Cap: length}
 	buf := *(*[]int16)(unsafe.Pointer(&header))
 
-	//runningSampleIndex := 0
 	squareWavePeriod := data.GetSampleRate() / data.GetSquareWaveFreq()
 	halfSquareWavePeriod := squareWavePeriod / 2
 	for i := range buf {
