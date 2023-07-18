@@ -1,15 +1,14 @@
 package config
 
 type AppConfig struct {
-	winHeight      int32
-	winWidth       int32
-	scale          int32
-	winTitle       string
-	fgColor        uint32
-	bgColor        uint32
-	clockRate      uint32
-	volume         uint8
-	squareWaveFreq uint32
+	winHeight   int32
+	winWidth    int32
+	scale       int32
+	winTitle    string
+	fgColor     uint32
+	bgColor     uint32
+	clockRate   uint32
+	audioConfig *AudioConfig
 }
 
 func (a *AppConfig) GetWinHeight() int32 {
@@ -40,16 +39,19 @@ func (a *AppConfig) GetClockRate() uint32 {
 	return a.clockRate
 }
 
+func (a *AppConfig) GetAudioConfig() *AudioConfig {
+	return a.audioConfig
+}
+
 func NewAppConfig(title string, height, width, scale int32, fg, bg, cr, freq uint32, volume uint8) *AppConfig {
 	return &AppConfig{
-		winHeight:      height * scale,
-		winWidth:       width * scale,
-		scale:          scale,
-		winTitle:       title,
-		fgColor:        fg,
-		bgColor:        bg,
-		clockRate:      cr,
-		volume:         volume,
-		squareWaveFreq: freq,
+		winHeight:   height * scale,
+		winWidth:    width * scale,
+		scale:       scale,
+		winTitle:    title,
+		fgColor:     fg,
+		bgColor:     bg,
+		clockRate:   cr,
+		audioConfig: NewAudioConfig(volume, freq),
 	}
 }

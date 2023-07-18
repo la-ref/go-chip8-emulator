@@ -4,7 +4,9 @@ package audio
 // void AudioCallback(void *userdata, Uint8 *stream, int len);
 import "C"
 import (
+	conf "emulator/config"
 	"github.com/veandco/go-sdl2/sdl"
+	"reflect"
 	"unsafe"
 )
 
@@ -14,13 +16,14 @@ type Audio struct {
 	Device   sdl.AudioDeviceID
 }
 
-func NewAudio() (*Audio, error) {
+func NewAudio(audioConf *conf.AudioConfig) (*Audio, error) {
 	audio := &Audio{
 		WantSpec: &sdl.AudioSpec{
 			Freq:     44100,
 			Format:   sdl.AUDIO_S16LSB, // little endian
 			Channels: 1,
 			Samples:  4096,
+			UserData: unsafe.Pointer(audioConf),
 		},
 	}
 	audio.WantSpec.Callback = sdl.AudioCallback(C.AudioCallback)
@@ -33,8 +36,16 @@ func NewAudio() (*Audio, error) {
 }
 
 //export AudioCallback
-func AudioCallback(userdata unsafe.Pointer, stream *C.Uint8, length C.int) {
-	_ = int(length)
+func AudioCallback(userdata unsafe.Pointer, _stream *C.Uint8, _length C.int) {
+	data := (*conf.AudioConfig)(userdata)
+
+	length := int(_length) / 2
+	header := reflect.SliceHeader{Data: uintptr(unsafe.Pointer(_stream)), Len: length, Cap: length}
+	buf := *(*[]int16)(unsafe.Pointer(&header))
+
+	for i := range buf {
+
+	}
 }
 
 func (a *Audio) HandleQuit() {

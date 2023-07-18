@@ -32,7 +32,7 @@ func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	aud, err := audio.NewAudio()
+	aud, err := audio.NewAudio(config.GetAudioConfig())
 	if err != nil {
 		return nil, err
 	}
