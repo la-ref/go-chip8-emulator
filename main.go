@@ -21,12 +21,13 @@ const (
 	CLOCK_RATE       = 500
 	VOLUME           = 100
 	SQUARE_WAVE_FREQ = 440
+	SAMPLE_RATE      = 44100
 
-	ROM = "./rom/tetris.ch8"
+	ROM = "./rom/brix.rom"
 )
 
 func main() {
-	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, VOLUME)
+	config := config2.NewAppConfig(WIN_TITLE, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
 	fmt.Println(config.GetWinWidth(), WIN_WIDTH)
 	chip8, err := chip.NewChip8(ROM, config)
 	if err != nil {
