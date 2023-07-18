@@ -49,10 +49,12 @@ func NewAudio(audioConf *conf.AudioConfig) (*Audio, error) {
 //export AudioCallback
 func AudioCallback(userdata unsafe.Pointer, _stream *C.uint8_t, _length C.int) {
 	data := (*conf.AudioConfig)(userdata)
+	if data == nil || data.GetSquareWaveFreq() == 0 {
+		return
+	}
 	length := int(_length) / 2
 	header := reflect.SliceHeader{Data: uintptr(unsafe.Pointer(_stream)), Len: length, Cap: length}
 	buf := *(*[]int16)(unsafe.Pointer(&header))
-
 	squareWavePeriod := data.GetSampleRate() / data.GetSquareWaveFreq()
 	halfSquareWavePeriod := squareWavePeriod / 2
 	for i := range buf {

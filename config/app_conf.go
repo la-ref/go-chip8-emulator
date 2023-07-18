@@ -1,6 +1,7 @@
 package config
 
 type AppConfig struct {
+	version     uint8
 	winHeight   int32
 	winWidth    int32
 	scale       int32
@@ -10,6 +11,10 @@ type AppConfig struct {
 	clockRate   uint32
 	rom         string
 	audioConfig *AudioConfig
+}
+
+func (a *AppConfig) GetVersion() uint8 {
+	return a.version
 }
 
 func (a *AppConfig) GetWinHeight() int32 {
@@ -48,8 +53,9 @@ func (a *AppConfig) GetRom() string {
 	return a.rom
 }
 
-func NewAppConfig(title, rom string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8) *AppConfig {
+func NewAppConfig(version uint8, title, rom string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8) *AppConfig {
 	return &AppConfig{
+		version:     version,
 		winHeight:   height * scale,
 		winWidth:    width * scale,
 		scale:       scale,

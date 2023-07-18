@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	VERSION          = chip.CHIP8
 	WIN_TITLE        = "CHIP8 Emulator"
 	WIN_WIDTH        = 64
 	WIN_HEIGHT       = 32
@@ -22,11 +23,11 @@ const (
 	SQUARE_WAVE_FREQ = 440
 	SAMPLE_RATE      = 44100
 
-	ROM = "./rom/4-flags.ch8"
+	ROM = "./rom/brix.rom"
 )
 
 func main() {
-	config := config2.NewAppConfig(WIN_TITLE, ROM, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
+	config := config2.NewAppConfig(uint8(VERSION), WIN_TITLE, ROM, WIN_HEIGHT, WIN_WIDTH, SCALE_FACTOR, FG_COLOR, BG_COLOR, CLOCK_RATE, SQUARE_WAVE_FREQ, SAMPLE_RATE, VOLUME)
 	chip8, err := chip.NewChip8(config)
 	if err != nil {
 		panic(err)

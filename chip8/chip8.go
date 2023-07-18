@@ -10,7 +10,12 @@ import (
 	"os"
 )
 
-const ENTRY_POINT = 0x200 // Program starts at 512 - 0010 0000 0000
+const ENTRY_POINT = 0x200 // Program starts at 512 - 0010 0000
+const (
+	CHIP8 uint8 = iota
+	SUPERCHIP
+	XOCHIP
+)
 
 /*
 Fonts are read from left to right and creating the font up to bottom
@@ -65,9 +70,10 @@ type Chip8 struct {
 	DT      uint8     // delay timer
 	ST      uint8     // sound timer
 
-	inst   *instructions
-	config *config.AppConfig
-	aud    *audio.Audio
+	currKey int8
+	inst    *instructions
+	config  *config.AppConfig
+	aud     *audio.Audio
 }
 
 type instructions struct {
@@ -91,9 +97,10 @@ func (i *instructions) Init(opCode uint16) {
 func NewChip8(config *config.AppConfig) (*Chip8, error) {
 
 	chip := &Chip8{
-		PC:     ENTRY_POINT,
-		inst:   new(instructions),
-		config: config,
+		PC:      ENTRY_POINT,
+		inst:    new(instructions),
+		currKey: -1,
+		config:  config,
 	}
 	err := chip.loadFile(config.GetRom())
 	if err != nil {
@@ -169,12 +176,21 @@ func (c *Chip8) cycle() error {
 		case 1:
 			// Set VX |= VY
 			c.V[c.inst.X] |= c.V[c.inst.Y]
+			if c.config.GetVersion() == CHIP8 {
+				c.V[0xF] = 0
+			}
 		case 2:
 			// Set VX &= VY
 			c.V[c.inst.X] &= c.V[c.inst.Y]
+			if c.config.GetVersion() == CHIP8 {
+				c.V[0xF] = 0
+			}
 		case 3:
 			// Set VX ^= VY
 			c.V[c.inst.X] ^= c.V[c.inst.Y]
+			if c.config.GetVersion() == CHIP8 {
+				c.V[0xF] = 0
+			}
 		case 4:
 			// Add VY to
 			carry := uint8(0)
@@ -193,8 +209,14 @@ func (c *Chip8) cycle() error {
 			c.V[0xF] = carry
 		case 6:
 			// Set VX >>= 1, store the shifted bit in VF
-			carry := c.V[c.inst.X] & 1
-			c.V[c.inst.X] >>= 1
+			carry := uint8(0)
+			if c.config.GetVersion() == CHIP8 {
+				carry = c.V[c.inst.Y] & 1
+				c.V[c.inst.X] = c.V[c.inst.Y] >> 1
+			} else {
+				carry = c.V[c.inst.X] & 1
+				c.V[c.inst.X] >>= 1
+			}
 			c.V[0xF] = carry
 		case 7:
 			// Subtract VX to VY and set it to VX
@@ -206,8 +228,14 @@ func (c *Chip8) cycle() error {
 			c.V[0xF] = carry
 		case 0xE:
 			// Set VX <<= 1, store the shifted bit in VF
-			carry := (c.V[c.inst.X] & 0x80) >> 7
-			c.V[c.inst.X] <<= 1
+			carry := uint8(0)
+			if c.config.GetVersion() == CHIP8 {
+				carry = (c.V[c.inst.Y] & 0x80) >> 7
+				c.V[c.inst.X] = c.V[c.inst.Y] << 1
+			} else {
+				carry = (c.V[c.inst.X] & 0x80) >> 7
+				c.V[c.inst.X] <<= 1
+			}
 			c.V[0xF] = carry
 		}
 	case 0x09:
@@ -273,13 +301,22 @@ func (c *Chip8) cycle() error {
 			var i uint8
 			for i = 0; i < uint8(len(c.Keypad)); i++ {
 				if c.Keypad[i] {
-					c.V[c.inst.X] = i
+					c.currKey = int8(i)
 					keyPressed = true
+					break
 				}
 			}
 			// Keep running the current opCode if no key pressed
 			if !keyPressed {
 				c.PC -= 2
+			} else {
+				// wait key release
+				if c.currKey != -1 && c.Keypad[c.currKey] {
+					c.PC -= 2
+				} else {
+					c.V[c.inst.X] = uint8(c.currKey)
+					c.currKey = -1
+				}
 			}
 		case 0x1E:
 			c.I += uint16(c.V[c.inst.X])
@@ -305,13 +342,22 @@ func (c *Chip8) cycle() error {
 		case 0x55:
 			// Memory register dump V0-VX
 			for i := 0; i < int(c.inst.X)+1; i++ {
-				c.Ram[c.I+uint16(i)] = c.V[i]
+				if c.config.GetVersion() == CHIP8 {
+					c.Ram[c.I] = c.V[i]
+					c.I++
+				} else {
+					c.Ram[c.I+uint16(i)] = c.V[i]
+				}
 			}
-			//c.I += 1
 		case 0x65:
 			// Memory register load V0-VX
 			for i := 0; i < int(c.inst.X)+1; i++ {
-				c.V[i] = c.Ram[c.I+uint16(i)]
+				if c.config.GetVersion() == CHIP8 {
+					c.V[i] = c.Ram[c.I]
+					c.I++
+				} else {
+					c.V[i] = c.Ram[c.I+uint16(i)]
+				}
 			}
 		}
 
