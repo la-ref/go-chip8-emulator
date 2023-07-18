@@ -22,7 +22,7 @@ const (
 	SQUARE_WAVE_FREQ = 440
 	SAMPLE_RATE      = 44100
 
-	ROM = "./rom/brix.rom"
+	ROM = "./rom/4-flags.ch8"
 )
 
 func main() {

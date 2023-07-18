@@ -177,36 +177,38 @@ func (c *Chip8) cycle() error {
 			c.V[c.inst.X] ^= c.V[c.inst.Y]
 		case 4:
 			// Add VY to
-			c.V[c.inst.X] += c.V[c.inst.Y]
-			if c.V[c.inst.X] > 255 {
-				c.V[0x0F] = 1
-			} else {
-				c.V[0x0F] = 0
+			carry := uint8(0)
+			if (uint16(c.V[c.inst.X]) + uint16(c.V[c.inst.Y])) > 255 {
+				carry = 1
 			}
+			c.V[c.inst.X] += c.V[c.inst.Y]
+			c.V[0xF] = carry
 		case 5:
 			// Substract VY to VX
-			if c.V[c.inst.X] >= c.V[c.inst.Y] { // Not a Borrow ( if positive )
-				c.V[0x0F] = 1
-			} else { // Borrow (negative)
-				c.V[0x0F] = 0
+			carry := uint8(0)
+			if c.V[c.inst.Y] <= c.V[c.inst.X] { // Not a Borrow ( if positive )
+				carry = 1
 			}
 			c.V[c.inst.X] -= c.V[c.inst.Y]
+			c.V[0xF] = carry
 		case 6:
 			// Set VX >>= 1, store the shifted bit in VF
-			c.V[0x0F] = c.V[c.inst.X] & 1
+			carry := c.V[c.inst.X] & 1
 			c.V[c.inst.X] >>= 1
+			c.V[0xF] = carry
 		case 7:
 			// Subtract VX to VY and set it to VX
-			if c.V[c.inst.X] <= c.V[c.inst.Y] { // Not a Borrow ( if positive )
-				c.V[0x0F] = 1
-			} else { // Borrow (negative)
-				c.V[0x0F] = 0
+			carry := uint8(0)
+			if c.V[c.inst.X] <= c.V[c.inst.Y] {
+				carry = 1
 			}
 			c.V[c.inst.X] = c.V[c.inst.Y] - c.V[c.inst.X]
+			c.V[0xF] = carry
 		case 0xE:
 			// Set VX <<= 1, store the shifted bit in VF
-			c.V[0x0F] = (c.V[c.inst.X] & 0x80) >> 7
+			carry := (c.V[c.inst.X] & 0x80) >> 7
 			c.V[c.inst.X] <<= 1
+			c.V[0xF] = carry
 		}
 	case 0x09:
 		// Skip to the next instruction if VX not equal to VY
@@ -359,7 +361,6 @@ func (c *Chip8) Draw(renderer *sdl.Renderer) {
 	for i := 0; i < len(c.Display); i++ {
 		rect.X = int32(i) % 64 * c.config.GetScale()
 		rect.Y = int32(i) / 64 * c.config.GetScale()
-
 		if c.Display[i] {
 			renderer.SetDrawColor(fr, fg, fb, falpha)
 			renderer.FillRect(rect)

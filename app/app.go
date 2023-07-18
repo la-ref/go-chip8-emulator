@@ -5,7 +5,6 @@ import (
 	"emulator/chip8"
 	conf "emulator/config"
 	utils "emulator/utils"
-	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -112,7 +111,6 @@ func (a *App) handleDefaultInputs(e sdl.Keycode) bool {
 			a.SetState(utils.RUNNING)
 		}
 	case sdl.K_BACKSPACE:
-		fmt.Println("backspace")
 		chip := a.chip8.Reset()
 		if chip == nil {
 			return true
