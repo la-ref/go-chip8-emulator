@@ -4,7 +4,7 @@
   margin-right: auto;
   margin-top: 8px;
   width: 10%;"
-src=".img/logo.png" /></h1>
+src="img/logo.png" /></h1>
 <div align="center">
   <a href="https://golang.org/dl" target="_blank">
     <img alt="GO" src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white" />
@@ -38,11 +38,17 @@ SDL provide a graphical user interface and handle user input.
 
 ### Screenshoots 📷
 
-![Chip8 Emulator](pong.png)
+- Pong :
 
-![Chip8 Emulator](brix.png)
+![Chip8 Emulator](img/pong.png)
 
-![Chip8 Emulator](chip8_emulator_screenshot.png)
+- Brix :
+
+![Chip8 Emulator](img/brix.png)
+
+- Tetris :
+
+![Chip8 Emulator](img/tetris.png)
 
 
 ## **Requirements 📍**
@@ -66,7 +72,7 @@ go get github.com/veandco/go-sdl2/sdl
 
 Note: SDL2 library is written in C. That means that you need the original SDL2 installated. Read the installation instructions for sdl2 library from [`go-sdl2`](github.com/veandco/go-sdl2) for your os.
 
-## **How to use the application ❓**
+## **How to use the emulator ❓**
 
 ### Launch the program ▶️
 
@@ -87,7 +93,7 @@ go get -u github.com/la-ref/go-chip8-emulator
 
 2   . Load a Chip8 ROM:
 
-Edit the main.go file and replace the ROM path with your path or roms that are available in the rom folder.
+Edit the `main.go` file and replace the ROM path with your path or roms that are available in the rom folder.
 Check [Customizable Options](#customizable-options)
 
 3   . Build and run the emulator:
