@@ -10,6 +10,7 @@ type AppConfig struct {
 	bgColor     uint32
 	clockRate   uint32
 	rom         string
+	key         KeyMap
 	audioConfig *AudioConfig
 }
 
@@ -53,7 +54,17 @@ func (a *AppConfig) GetRom() string {
 	return a.rom
 }
 
-func NewAppConfig(version uint8, title, rom string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8) *AppConfig {
+func (a *AppConfig) GetKey() KeyMap {
+	return a.key
+}
+
+func NewAppConfig(version uint8, title, rom string, height, width, scale int32, fg, bg, cr, freq, sample uint32, volume uint8, key string) *AppConfig {
+	var binding KeyMap
+	if key == "AZERTY" {
+		binding = AzertyKeyMap
+	} else {
+		binding = QwertyKeyMap
+	}
 	return &AppConfig{
 		version:     version,
 		winHeight:   height * scale,
@@ -65,5 +76,6 @@ func NewAppConfig(version uint8, title, rom string, height, width, scale int32, 
 		clockRate:   cr,
 		audioConfig: NewAudioConfig(volume, freq, sample),
 		rom:         rom,
+		key:         binding,
 	}
 }

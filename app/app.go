@@ -42,7 +42,7 @@ func NewApp(config *conf.AppConfig, chip *chip8.Chip8) (*App, error) {
 		renderer: renderer,
 		state:    utils.RUNNING,
 		chip8:    chip,
-		keybind:  chip8.AzertyKeyMap,
+		keybind:  config.GetKey(),
 		aud:      aud,
 	}
 	chip.AddAudio(aud)
